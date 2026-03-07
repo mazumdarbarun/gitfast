@@ -1,2 +1,2 @@
 # gitfast
-Git tool written in go to work blazingly fast 
+Git tool written in go to work blazingly fast in your office
