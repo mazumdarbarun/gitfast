@@ -136,13 +136,13 @@ func main() {
 	var commitMsg string
 	fmt.Println("Enter your commit after following prompt")
 	fmt.Printf(prepend)
-	fmt.Scanln(&commitMsg)
-
-	cmd := exec.Command("git", "commit", "-m", commitMsg)
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		fmt.Println("Error: ", err)
-		fmt.Println(string(output))
-		return
-	}
+	fmt.Scanf("%s", &commitMsg)
+	fmt.Println(prepend, commitMsg)
+	//cmd := exec.Command("git", "commit", "-m", prepend + commitMsg)
+	//output, err := cmd.CombinedOutput()
+	//if err != nil {
+	//	fmt.Println("Error: ", err)
+	//	fmt.Println(string(output))
+	//	return
+	//}
 }
