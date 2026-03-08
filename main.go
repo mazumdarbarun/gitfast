@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"bufio"
 )
 
 func doesDotGitDirExists(dir string) (bool) {
@@ -36,6 +37,8 @@ func getCommitMsgPrepend(branch string) (prepend string, err error) {
 		prepend = "feat"
 	case strings.HasPrefix(typeOfBranch, "bugfix"):
 		prepend = "bugfix"
+	case strings.HasPrefix(typeOfBranch, "hotfix"):
+		prepend = "hotfix"
 	case strings.HasPrefix(typeOfBranch, "ci"):
 		prepend = "ci"
 	default:
@@ -48,7 +51,7 @@ func getCommitMsgPrepend(branch string) (prepend string, err error) {
 		ticketDescription = strings.TrimPrefix(ticketDescription, "plscm-")
 	case strings.HasPrefix(strings.ToLower(ticketDescription), "poicm-"):
 		ticketDescription = strings.TrimPrefix(ticketDescription, "poicm-")
-		prepend = prepend + "POICM-"
+		prepend = prepend + ": POICM-"
 	default:
 		return prepend, fmt.Errorf("Did not find project name in branch name: %v", branch)
 	}
@@ -134,15 +137,17 @@ func main() {
 	}
 
 	var commitMsg string
-	fmt.Println("Enter your commit after following prompt")
-	fmt.Printf(prepend)
-	fmt.Scanf("%s", &commitMsg)
-	fmt.Println(prepend, commitMsg)
-	//cmd := exec.Command("git", "commit", "-m", prepend + commitMsg)
-	//output, err := cmd.CombinedOutput()
-	//if err != nil {
-	//	fmt.Println("Error: ", err)
-	//	fmt.Println(string(output))
-	//	return
-	//}
+	fmt.Printf("%s ", prepend)
+	reader := bufio.NewReader(os.Stdin)
+	commitMsg, err = reader.ReadString('\n')
+	commitMsg = strings.TrimSpace(commitMsg)
+	fullCommitMsg := fmt.Sprintf("%s %s", prepend, commitMsg)
+	fmt.Printf("Full commit message: %v\n", fullCommitMsg)
+	cmd := exec.Command("git", "commit", "-m", fullCommitMsg)
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		fmt.Println("Error: ", err)
+		fmt.Println(string(output))
+		os.Exit(1)
+	}
 }
